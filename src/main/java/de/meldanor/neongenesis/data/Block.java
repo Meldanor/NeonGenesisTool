@@ -26,6 +26,9 @@ package de.meldanor.neongenesis.data;
 
 import javafx.geometry.Point3D;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  *
  */
@@ -40,6 +43,8 @@ public class Block {
     private Point3D coordinates;
     private Point3D boundingBox;
     private byte refineLevel;
+
+    private List<Block> neighbors;
 
     Block(int id) {
         this.id = id;
@@ -98,6 +103,25 @@ public class Block {
         this.refineLevel = refineLevel;
     }
 
+    /**
+     * The first neighbor is at lower x coordinate, the
+     * second at higher x, the third at lower y, fourth at higher y, fifth
+     * at lower z and the sixth at higher z.
+     *
+     * @return List of Neighbors. If there is no neighbor at a certain position, the member will be <code>null</code>
+     */
+    public List<Block> getNeighbors() {
+        return neighbors;
+    }
+
+    public Block getNeighbor(BlockFace face) {
+        return neighbors.get(face.neighborListIndex);
+    }
+
+    void setNeighbors(List<Block> neighbors) {
+        this.neighbors = Collections.unmodifiableList(neighbors);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -125,5 +149,46 @@ public class Block {
                 ", boundingBox=" + boundingBox +
                 ", refineLevel=" + refineLevel +
                 '}';
+    }
+
+    public enum BlockFace {
+        LEFT(-1, 0, 0, 0),
+        RIGHT(1, 0, 0, 1),
+        BOTTOM(0, -1, 0, 2),
+        TOP(0, 1, 0, 3),
+        BACK(0, 0, -1, 4),
+        FRONT(0, 0, 1, 5);
+
+        private final int xDirection;
+        private final int yDirection;
+        private final int zDirection;
+        private final int neighborListIndex;
+
+        BlockFace(int xDirection, int yDirection, int zDirection, int neighborListIndex) {
+            this.xDirection = xDirection;
+            this.yDirection = yDirection;
+            this.zDirection = zDirection;
+            this.neighborListIndex = neighborListIndex;
+        }
+
+        public int getXDirection() {
+            return xDirection;
+        }
+
+        public int getYDirection() {
+            return yDirection;
+        }
+
+        public int getZDirection() {
+            return zDirection;
+        }
+
+        public Point3D getDirectionVector() {
+            return new Point3D(xDirection, yDirection, zDirection);
+        }
+
+        public int getNeighborListIndex() {
+            return neighborListIndex;
+        }
     }
 }

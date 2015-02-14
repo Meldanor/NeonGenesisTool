@@ -31,6 +31,9 @@ import ncsa.hdf.object.Group;
 import ncsa.hdf.object.HObject;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -97,6 +100,7 @@ public class BlockReader {
         fillCoordinates(datasetMap.get(BlockTable.COORDINATES.name), tree);
         fillBFlags(datasetMap.get(BlockTable.B_FLAGS.name), tree);
         fillWhichChild(datasetMap.get(BlockTable.WHICH_CHILD.name), tree);
+        fillNeighbors(datasetMap.get(BlockTable.GID.name), tree);
     }
 
     private void fillBlockSize(Dataset set, BlockTree builderMap) throws Exception {
@@ -150,6 +154,26 @@ public class BlockReader {
         int[] data = (int[]) set.read();
         for (int i = 0; i < data.length; ++i) {
             builderMap.get(i + 1).setWhichChild((byte) data[i]);
+        }
+    }
+
+    private void fillNeighbors(Dataset set, BlockTree tree) throws Exception {
+        set.init();
+        // Select only the neighbors(6)
+        set.getSelectedDims()[1] = 6;
+        int[] data = (int[]) set.read();
+        int height = set.getHeight();
+        for (int i = 0; i < height; i++) {
+            Block b = tree.get(i + 1);
+            List<Block> neighbors = new ArrayList<>(6);
+            for (int j = 0; j < 6; ++j) {
+                int neighborId = data[(i * 6) + j];
+                if (neighborId > 0)
+                    neighbors.add(tree.get(neighborId));
+                else
+                    neighbors.add(null);
+            }
+            b.setNeighbors(neighbors);
         }
     }
 }

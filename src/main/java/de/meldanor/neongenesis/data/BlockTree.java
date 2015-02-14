@@ -89,7 +89,6 @@ public class BlockTree {
         return nodes[blockId - 1];
     }
 
-
     private void construct(int[] relationArray) {
         for (int i = 0; i < relationArray.length; i += 9) {
             int nodeIndex = (i / 9);
