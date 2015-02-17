@@ -22,14 +22,47 @@
  * THE SOFTWARE.
  */
 
-package de.meldanor.neongenesis;
+package de.meldanor.neongenesis.hdf5;
+
+import ncsa.hdf.object.Dataset;
+
+import java.util.Collections;
+import java.util.Map;
 
 /**
- * The entry class of the program
+ * A general class for HDF5 files metadata describing the datasets
  */
-public class Core {
+public class Hdf5MetaData {
 
-    public static void main(String[] args) {
-        System.out.println("Hello World, this is Rise!");
+    private Map<String, Dataset> datasetMap;
+
+    boolean isClosed = false;
+
+    public Hdf5MetaData(Map<String, Dataset> datasetMap) {
+        this.datasetMap = Collections.unmodifiableMap(datasetMap);
     }
+
+    /**
+     * Will result in an IllegalStateException if the reader was closed
+     *
+     * @return an unmodifiable version of the dataset map
+     */
+    Map<String, Dataset> getDatasetMap() {
+        if (isClosed)
+            throw new IllegalStateException("Reader was closed, no access to datasets!");
+        return datasetMap;
+    }
+
+    /**
+     * Will result in an IllegalStateException if the reader was closed
+     *
+     * @return The given dataset
+     */
+    Dataset getDataset(String datasetName) {
+        if (isClosed)
+            throw new IllegalStateException("Reader was closed, no access to datasets!");
+        return datasetMap.get(datasetName);
+    }
+
+
 }

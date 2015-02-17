@@ -22,22 +22,22 @@
  * THE SOFTWARE.
  */
 
-package de.meldanor.neongenesis.data;
+package de.meldanor.neongenesis.other;
 
+import de.meldanor.neongenesis.hdf5.Block;
+import de.meldanor.neongenesis.hdf5.BlockTree;
+import de.meldanor.neongenesis.hdf5.Flash3Reader;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class BlockTest {
 
@@ -45,8 +45,8 @@ public class BlockTest {
 
     @Test
     public void testReadingBlocks() throws Exception {
-        BlockReader reader = new BlockReader(new File(FILE));
-        BlockTree blockTree = reader.readBlocks();
+        Flash3Reader reader = new Flash3Reader(new File(FILE));
+        BlockTree blockTree = reader.getMetaData().getBlockTree();
 
         List<Block> blocks = blockTree.getAll();
         // Group blocks based on the refine level (height of node in tree) without knowing the tree structure
@@ -66,18 +66,18 @@ public class BlockTest {
     @Test
     public void testToJson() throws Exception {
 
-        BlockReader reader = new BlockReader(new File(FILE));
-        BlockTree blockTree = reader.readBlocks();
+        Flash3Reader reader = new Flash3Reader(new File(FILE));
+        BlockTree blockTree = reader.getMetaData().getBlockTree();
 
-        String treeAsJson = JsonBlockTree.toJson(blockTree);
+        String treeAsJson = BlockTreeJsonExporter.toJson(blockTree);
         assertFalse(treeAsJson.isEmpty());
         reader.close();
     }
 
     @Test
     public void readValuesTest() throws Exception {
-        BlockReader reader = new BlockReader(new File(FILE));
-        BlockTree blockTree = reader.readBlocks();
+        Flash3Reader reader = new Flash3Reader(new File(FILE));
+        BlockTree blockTree = reader.getMetaData().getBlockTree();
 
         float[] floats = reader.readFloatValues("dens");
         assertTrue(floats.length > 1);
@@ -87,15 +87,25 @@ public class BlockTest {
         reader.close();
     }
 
-    // Disable ignore to generate the tree and display it via 'src/test/resources/de/meldanor/neongenesis/data/tree.html'
+    @Test(expected = IllegalStateException.class)
+    public void readFromClosedReader() throws Exception {
+        Flash3Reader reader = new Flash3Reader(new File(FILE));
+
+        reader.close();
+
+        reader.getMetaData().getVariableMap();
+    }
+
+
+    // Disable ignore to generate the tree and display it via 'src/test/resources/de/meldanor/neongenesis/other/tree.html'
     @Ignore
     @Test
     public void toJson() throws Exception {
 
-        BlockReader reader = new BlockReader(new File(FILE));
-        BlockTree blockTree = reader.readBlocks();
-        PrintWriter writer = new PrintWriter(Paths.get("src", "test", "resources", "de", "meldanor", "neongenesis", "data", "tree.json").toFile());
-        writer.print(JsonBlockTree.toJson(blockTree));
+        Flash3Reader reader = new Flash3Reader(new File(FILE));
+        BlockTree blockTree = reader.getMetaData().getBlockTree();
+        PrintWriter writer = new PrintWriter(Paths.get("src", "test", "resources", "de", "meldanor", "neongenesis", "other", "tree.json").toFile());
+        writer.print(BlockTreeJsonExporter.toJson(blockTree));
         writer.flush();
         writer.close();
         reader.close();

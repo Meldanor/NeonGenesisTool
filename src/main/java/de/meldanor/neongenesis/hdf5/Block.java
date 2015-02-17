@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package de.meldanor.neongenesis.data;
+package de.meldanor.neongenesis.hdf5;
 
 import javafx.geometry.Point3D;
 
@@ -30,7 +30,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * A cube in the adaptive mesh. Contains the necessary information to localize the block. To get the variable values
+ * of a cube, use one of the read functions of {@link de.meldanor.neongenesis.hdf5.Flash3Reader} and the block.
  *
+ * @implNote This class is nearly immutable. To mutate the block, use {@link de.meldanor.neongenesis.hdf5.BlockChanger}
  */
 public class Block {
 
@@ -47,67 +50,135 @@ public class Block {
 
     private List<Block> neighbors;
 
+    /**
+     * Constructs an empty block with a fixed id
+     *
+     * @param id The unique id. 1 based
+     */
     Block(int id) {
         this.id = id;
     }
 
-
+    /**
+     * @return The unique id of the block.
+     * <p>
+     * 1 based.
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * @return Some FLASH3 specific flags.
+     */
     public byte getBflags() {
         return bflags;
     }
 
+    /**
+     * @return Every child has an index, at which the child itself is contained in its parent array. 1 based.
+     * <p>
+     * -1 indicates, this is a root.
+     */
     public byte getWhichChild() {
         return whichChild;
     }
 
+    /**
+     * @return The size of the cube in cm
+     */
     public float getBlockSize() {
         return blockSize;
     }
 
+    /**
+     * @return The 3D coordinates in cm
+     */
     public Point3D getCoordinates() {
         return coordinates;
     }
 
+    /**
+     * @return The bounding box of the cube in cm
+     */
     public Point3D getBoundingBox() {
         return boundingBox;
     }
 
+    /**
+     * @return The refinement level of the cube. It is also the level of the node in the tree. 1 based
+     */
     public byte getRefineLevel() {
         return refineLevel;
     }
 
+    /**
+     * @return 1, if the block is a leaf, 2 if its a parent, 3 otherwise(like the root)
+     */
     public byte getNodeType() {
         return nodeType;
     }
 
+    /**
+     * Set the Bflags
+     *
+     * @param bflags See {@link #getBflags()}
+     */
     void setBflags(byte bflags) {
         this.bflags = bflags;
     }
 
+    /**
+     * Set the BlockSize
+     *
+     * @param blockSize See {@link #getBlockSize()}
+     */
     void setBlockSize(float blockSize) {
         this.blockSize = blockSize;
     }
 
+    /**
+     * Set the WhichChild
+     *
+     * @param whichChild See {@link #getWhichChild()}
+     */
     void setWhichChild(byte whichChild) {
         this.whichChild = whichChild;
     }
 
+    /**
+     * Set the Coordinates
+     *
+     * @param coordinates See {@link #getCoordinates()}
+     */
     void setCoordinates(Point3D coordinates) {
         this.coordinates = coordinates;
     }
 
+    /**
+     * Set the bounding box
+     *
+     * @param boundingBox See {@link #getBoundingBox()}
+     */
     void setBoundingBox(Point3D boundingBox) {
         this.boundingBox = boundingBox;
     }
 
+    /**
+     * Set the refine level
+     *
+     * @param refineLevel See {@link #getRefineLevel()}
+     */
     void setRefineLevel(byte refineLevel) {
         this.refineLevel = refineLevel;
     }
 
+
+    /**
+     * Set the refine level
+     *
+     * @param nodeType See {@link #getNodeType()}
+     */
     void setNodeType(byte nodeType) {
         this.nodeType = nodeType;
     }
@@ -123,10 +194,21 @@ public class Block {
         return neighbors;
     }
 
+    /**
+     * Return the neighbor of this block.
+     *
+     * @param face The direction to indicate the neighbor.
+     * @return A neighbor if there is one, otherwise <code>null</code>
+     */
     public Block getNeighbor(BlockFace face) {
         return neighbors.get(face.neighborListIndex);
     }
 
+    /**
+     * Set the neighbors
+     *
+     * @param neighbors See {@link #getNeighbors()}
+     */
     void setNeighbors(List<Block> neighbors) {
         this.neighbors = Collections.unmodifiableList(neighbors);
     }
@@ -160,12 +242,33 @@ public class Block {
                 '}';
     }
 
+    /**
+     * Indicates the orientation to get the neighbor of a block. See {@link #getNeighbor(de.meldanor.neongenesis.hdf5.Block.BlockFace)}
+     */
     public enum BlockFace {
+        /**
+         * Negative x-coordinate
+         */
         LEFT(-1, 0, 0, 0),
+        /**
+         * Positive x-coordinate
+         */
         RIGHT(1, 0, 0, 1),
+        /**
+         * Negative y-coordinate
+         */
         BOTTOM(0, -1, 0, 2),
+        /**
+         * Positive y-coordinate
+         */
         TOP(0, 1, 0, 3),
+        /**
+         * Negative z-coordinate
+         */
         BACK(0, 0, -1, 4),
+        /**
+         * Positive z-coordinate
+         */
         FRONT(0, 0, 1, 5);
 
         private final int xDirection;

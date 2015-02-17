@@ -22,18 +22,39 @@
  * THE SOFTWARE.
  */
 
-package de.meldanor.neongenesis.data;
+package de.meldanor.neongenesis.other;
 
+import de.meldanor.neongenesis.hdf5.Block;
+import de.meldanor.neongenesis.hdf5.BlockTree;
 import jodd.json.JsonWriter;
 
 import java.util.List;
 
 /**
- *
+ * A helper class to export the block tree as JSON format. Useful to display the structure via D3 or something.
  */
-public class JsonBlockTree {
+public class BlockTreeJsonExporter {
 
-    public static String toJson(BlockTree tree) {
+    /**
+     * Convert the tree to JSON containing only the blocks ID.
+     * Example:
+     * <pre>
+     * {
+     *      "name": "1",
+     *       "children": [ {
+     *          "name": "2",
+     *          "parent": "1",
+     *          "children": [
+     *              ...
+     *          ]
+     *       }
+     *  }
+     * </pre>
+     *
+     * @param tree The tree to convert.
+     * @return A JSON String.
+     */
+    public static String toJson(final BlockTree tree) {
 
         StringBuilder builder = new StringBuilder();
         JsonWriter writer = new JsonWriter(builder);
