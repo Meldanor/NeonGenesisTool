@@ -39,6 +39,7 @@ public class Block {
     private byte bflags;
     private float blockSize;
     private byte whichChild;
+    private byte nodeType;
 
     private Point3D coordinates;
     private Point3D boundingBox;
@@ -79,6 +80,10 @@ public class Block {
         return refineLevel;
     }
 
+    public byte getNodeType() {
+        return nodeType;
+    }
+
     void setBflags(byte bflags) {
         this.bflags = bflags;
     }
@@ -101,6 +106,10 @@ public class Block {
 
     void setRefineLevel(byte refineLevel) {
         this.refineLevel = refineLevel;
+    }
+
+    void setNodeType(byte nodeType) {
+        this.nodeType = nodeType;
     }
 
     /**

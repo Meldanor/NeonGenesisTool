@@ -30,12 +30,14 @@ import org.junit.Test;
 import java.io.File;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class BlockTest {
 
@@ -43,8 +45,8 @@ public class BlockTest {
 
     @Test
     public void testReadingBlocks() throws Exception {
-        BlockReader reader = new BlockReader();
-        BlockTree blockTree = reader.readBlocks(new File(FILE));
+        BlockReader reader = new BlockReader(new File(FILE));
+        BlockTree blockTree = reader.readBlocks();
 
         List<Block> blocks = blockTree.getAll();
         // Group blocks based on the refine level (height of node in tree) without knowing the tree structure
@@ -58,16 +60,31 @@ public class BlockTest {
         for (Byte key : levelOrderMap.keySet()) {
             assertEquals("Not equal tree levels at level '" + key + " '!", levelOrder.get(key), levelOrderMap.get(key));
         }
+        reader.close();
     }
 
     @Test
     public void testToJson() throws Exception {
 
-        BlockReader reader = new BlockReader();
-        BlockTree blockTree = reader.readBlocks(new File(FILE));
+        BlockReader reader = new BlockReader(new File(FILE));
+        BlockTree blockTree = reader.readBlocks();
 
         String treeAsJson = JsonBlockTree.toJson(blockTree);
         assertFalse(treeAsJson.isEmpty());
+        reader.close();
+    }
+
+    @Test
+    public void readValuesTest() throws Exception {
+        BlockReader reader = new BlockReader(new File(FILE));
+        BlockTree blockTree = reader.readBlocks();
+
+        float[] floats = reader.readFloatValues("dens");
+        assertTrue(floats.length > 1);
+        Block block = blockTree.get(2);
+        floats = reader.readFloatValues("velx", block);
+        assertTrue(floats.length > 1);
+        reader.close();
     }
 
     // Disable ignore to generate the tree and display it via 'src/test/resources/de/meldanor/neongenesis/data/tree.html'
@@ -75,12 +92,13 @@ public class BlockTest {
     @Test
     public void toJson() throws Exception {
 
-        BlockReader reader = new BlockReader();
-        BlockTree blockTree = reader.readBlocks(new File(FILE));
+        BlockReader reader = new BlockReader(new File(FILE));
+        BlockTree blockTree = reader.readBlocks();
         PrintWriter writer = new PrintWriter(Paths.get("src", "test", "resources", "de", "meldanor", "neongenesis", "data", "tree.json").toFile());
         writer.print(JsonBlockTree.toJson(blockTree));
         writer.flush();
-
+        writer.close();
+        reader.close();
     }
 
 }
