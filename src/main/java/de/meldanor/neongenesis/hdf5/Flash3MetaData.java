@@ -48,11 +48,14 @@ public class Flash3MetaData extends Hdf5MetaData {
         LOGICAL_RUNTIME_PARAMETER("logical runtime parameters"),
         LOGICAL_SCALARS("logical scalars"),
         NODE_TYPE("node type"),
+        PROCESSOR_NUMBER("processor number"),
         REAL_RUNTIME_PARAMETER("real runtime parameters"),
         REAL_SCALARS("real scalars"),
         REFINE_LEVEL("refine level"),
+        SIM_INFO("sim info"),
         STRING_RUNTIME_PARAMETER("string runtime parameters"),
         STRING_SCALARS("string scalars"),
+        UNKNOWN_NAMES("unknown names"),
         WHICH_CHILD("which child");
 
         private final String datasetName;
