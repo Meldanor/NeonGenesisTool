@@ -32,9 +32,12 @@ import org.junit.rules.ExternalResource;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class CellReducerTest {
@@ -43,7 +46,7 @@ public class CellReducerTest {
     private static final String Y_DIMENSION = "nyb";
     private static final String Z_DIMENSION = "nzb";
 
-    private static final String FILE = "D:/Studium/Bachelorarbeit/plotfiles/hvc_hdf5_plt_cnt_0000";
+    private static final String FILE = "D:/Studium/Bachelorarbeit/plotfiles/hvc_hdf5_plt_cnt_0100";
     private Flash3Reader source;
 
     private Point3D sourceDimension;
@@ -84,5 +87,45 @@ public class CellReducerTest {
             List<float[]> result = reducer.reduceFloatDataset(source, dataset);
             assertTrue(result.size() > 1);
         }
+    }
+
+    @Test
+    public void testAllFloatDatasetParallel() throws Exception {
+        CellReducer reducer = new CellReducer(sourceDimension, ReducerFactory.Reducer.MEAN);
+        List<String> datasets = Arrays.asList("dens", "eint", "ener", "gpot", "metl", "ms_h", "ms_i", "pres", "temp", "velx", "vely", "velz");
+
+        Map<String, List<float[]>> serialResults = new TreeMap<>();
+        for (String dataset : datasets) {
+            List<float[]> result = reducer.reduceFloatDataset(source, dataset);
+            assertTrue(result.size() > 1);
+            serialResults.put(dataset, result);
+        }
+
+        Map<String, List<float[]>> parallelResults = Collections.synchronizedMap(new TreeMap<>());
+        datasets.parallelStream().forEach(dataset -> {
+            List<float[]> result = null;
+            try {
+                result = reducer.reduceFloatDataset(source, dataset);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            assertTrue(result.size() > 1);
+            parallelResults.put(dataset, result);
+        });
+        
+        assertEquals(serialResults.size(), parallelResults.size());
+        for (String dataset : datasets) {
+            List<float[]> serialResultList = serialResults.get(dataset);
+            List<float[]> parallelResultList = parallelResults.get(dataset);
+
+            assertEquals(serialResultList.size(), parallelResultList.size());
+
+            for (int i = 0; i < serialResultList.size(); i++) {
+                float[] serialResult = serialResultList.get(i);
+                float[] parallelResult = parallelResultList.get(i);
+                assertArrayEquals(serialResult, parallelResult, 0.1F);
+            }
+        }
+
     }
 }

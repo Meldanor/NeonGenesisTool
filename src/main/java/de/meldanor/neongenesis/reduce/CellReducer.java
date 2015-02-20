@@ -90,11 +90,18 @@ public class CellReducer {
         return result;
     }
 
+    private ThreadLocal<int[]> intBuffer = new ThreadLocal<int[]>() {
+        @Override
+        protected int[] initialValue() {
+            return new int[8];
+        }
+    };
+
     private int[] reduceInt(int[] flatOriginal) {
 
         // TODO: Replace with variable dimension. At the moment the dimension is 2*2*2 for a half reduction
         int[] result = new int[flatOriginal.length / 8];
-        int[] array = new int[8];
+        int[] array = intBuffer.get();
         for (int i = 0, x = 0; x < originalXDimension; x += 2) {
             for (int y = 0; y < originalYDimension; y += 2) {
                 for (int z = 0; z < originalZDimension; z += 2, i++) {
@@ -141,11 +148,18 @@ public class CellReducer {
         return result;
     }
 
+    private ThreadLocal<float[]> floatBuffer = new ThreadLocal<float[]>() {
+        @Override
+        protected float[] initialValue() {
+            return new float[8];
+        }
+    };
+
     private float[] reduceFloat(float[] flatOriginal) {
 
         // TODO: Replace with variable dimension. At the moment the dimension is 2*2*2 for a half reduction
         float[] result = new float[flatOriginal.length / 8];
-        float[] array = new float[8];
+        float[] array = floatBuffer.get();
         for (int i = 0, x = 0; x < originalXDimension; x += 2) {
             for (int y = 0; y < originalYDimension; y += 2) {
                 for (int z = 0; z < originalZDimension; z += 2, i++) {
