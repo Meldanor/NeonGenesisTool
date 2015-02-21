@@ -25,6 +25,7 @@
 package de.meldanor.neongenesis.hdf5;
 
 import ncsa.hdf.object.Attribute;
+import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.h5.H5ScalarDS;
 import org.junit.Rule;
@@ -205,4 +206,36 @@ public class Hdf5WriterTest {
 
         writer.close();
     }
+
+    @Test
+    public void testCopyDataset() throws Exception {
+
+        // Create data
+        File originalFile = temporaryFolder.newFile();
+        Hdf5Writer writer = new Hdf5Writer(originalFile);
+        int[] array2D = new int[20 * 10];
+        // 2D Array
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 10; j++) {
+                array2D[i * 10 + j] = 1000 + i * 100 + j;
+            }
+        }
+        writer.writeIntDataset(DATASET_2D, array2D, 20L, 10L);
+        writer.close();
+
+        // Create copy
+        File copyFile = temporaryFolder.newFile();
+        writer = new Hdf5Writer(copyFile);
+        Hdf5Reader reader = new Hdf5Reader(originalFile);
+        Dataset dataset = reader.getMetaData().getDataset(DATASET_2D);
+        writer.copyDataset(dataset);
+        reader.close();
+        writer.close();
+
+        // Read copy
+        reader = new Hdf5Reader(copyFile);
+        int[] ints = reader.readIntValues(DATASET_2D);
+        assertArrayEquals(array2D, ints);
+    }
+
 }

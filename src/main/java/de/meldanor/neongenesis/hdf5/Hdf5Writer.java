@@ -25,10 +25,7 @@
 package de.meldanor.neongenesis.hdf5;
 
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
-import ncsa.hdf.object.Attribute;
-import ncsa.hdf.object.Datatype;
-import ncsa.hdf.object.FileFormat;
-import ncsa.hdf.object.Group;
+import ncsa.hdf.object.*;
 import ncsa.hdf.object.h5.H5CompoundDS;
 import ncsa.hdf.object.h5.H5File;
 import ncsa.hdf.object.h5.H5ScalarDS;
@@ -196,6 +193,32 @@ public class Hdf5Writer implements Closeable {
             throw new IOException("Can't write compound '" + name + "' to file: " + hdf5File.getName());
 
         return dataset;
+    }
+
+    /**
+     * Creates a copy of the dataset. The dataset can be from another {@link de.meldanor.neongenesis.hdf5.Hdf5Reader}
+     * and will be written to this file. This method uses the original name for the copy name.
+     *
+     * @param original The original dataset. Must be open.
+     * @return The copied dataset(not the original).
+     * @throws Exception
+     * @see #copyDataset(ncsa.hdf.object.Dataset, String)
+     */
+    public Dataset copyDataset(Dataset original) throws Exception {
+        return this.copyDataset(original, original.getName());
+    }
+
+    /**
+     * Creates a copy of the dataset. The dataset can be from another {@link de.meldanor.neongenesis.hdf5.Hdf5Reader}
+     * and will be written to this file.
+     *
+     * @param original The original dataset. Must be open.
+     * @param newName  The new name for the copy.
+     * @return The copied dataset(not the original).
+     * @throws Exception
+     */
+    public Dataset copyDataset(Dataset original, String newName) throws Exception {
+        return (Dataset) hdf5File.copy(original, root, newName);
     }
 
     @Override
