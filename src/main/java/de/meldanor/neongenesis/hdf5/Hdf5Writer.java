@@ -200,12 +200,11 @@ public class Hdf5Writer implements Closeable {
      * and will be written to this file. This method uses the original name for the copy name.
      *
      * @param original The original dataset. Must be open.
-     * @return The copied dataset(not the original).
      * @throws Exception
      * @see #copyDataset(ncsa.hdf.object.Dataset, String)
      */
-    public Dataset copyDataset(Dataset original) throws Exception {
-        return this.copyDataset(original, original.getName());
+    public void copyDataset(Dataset original) throws Exception {
+        this.copyDataset(original, original.getName());
     }
 
     /**
@@ -214,11 +213,10 @@ public class Hdf5Writer implements Closeable {
      *
      * @param original The original dataset. Must be open.
      * @param newName  The new name for the copy.
-     * @return The copied dataset(not the original).
      * @throws Exception
      */
-    public Dataset copyDataset(Dataset original, String newName) throws Exception {
-        return (Dataset) hdf5File.copy(original, root, newName);
+    public void copyDataset(Dataset original, String newName) throws Exception {
+        hdf5File.copy(original, root, newName);
     }
 
     @Override

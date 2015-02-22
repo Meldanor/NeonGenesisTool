@@ -43,7 +43,12 @@ public enum Flash3DataTypes {
     /**
      * Describes a string of undefined length
      */
-    STRING(new H5Datatype(Datatype.CLASS_STRING, -1, -1, -1));
+    STRING(new H5Datatype(Datatype.CLASS_STRING, Datatype.NATIVE, Datatype.NATIVE, Datatype.NATIVE)),
+
+    /**
+     * Describes a string with a maximum length of 80 chars. (Good old mainframe times)
+     */
+    VARCHAR_80(new H5Datatype(Datatype.CLASS_STRING, 80, Datatype.NATIVE, Datatype.NATIVE));
 
     private final Datatype datatype;
 

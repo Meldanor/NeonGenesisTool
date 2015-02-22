@@ -37,7 +37,7 @@ public class Flash3MetaData extends Hdf5MetaData {
     /**
      * The standard tables of the plot file
      */
-    private enum Flash3Dataset {
+    public enum Flash3Dataset {
         B_FLAGS("bflags"),
         BLOCK_SIZE("block size"),
         BOUNDING_BOX("bounding box"),
@@ -65,6 +65,9 @@ public class Flash3MetaData extends Hdf5MetaData {
             this.datasetName = datasetName;
         }
 
+        public String getDatasetName() {
+            return datasetName;
+        }
     }
 
     private final BlockTree blockTree;
@@ -211,7 +214,7 @@ public class Flash3MetaData extends Hdf5MetaData {
     }
 
     private Map<String, Integer> fillIntegerInfos(Flash3Dataset dataset) throws Exception {
-        Map<String, Integer> map = new HashMap<>();
+        Map<String, Integer> map = new LinkedHashMap<>();
         Vector data = getParameterVector(dataset.datasetName);
         String[] names = (String[]) data.get(0);
         int[] values = (int[]) data.get(1);
@@ -223,7 +226,7 @@ public class Flash3MetaData extends Hdf5MetaData {
     }
 
     private Map<String, Boolean> fillBooleanInfos(Flash3Dataset dataset) throws Exception {
-        Map<String, Boolean> map = new HashMap<>();
+        Map<String, Boolean> map = new LinkedHashMap<>();
         Vector data = getParameterVector(dataset.datasetName);
         String[] names = (String[]) data.get(0);
         int[] values = (int[]) data.get(1);
@@ -235,7 +238,7 @@ public class Flash3MetaData extends Hdf5MetaData {
     }
 
     private Map<String, Float> fillFloatInfos(Flash3Dataset dataset) throws Exception {
-        Map<String, Float> map = new HashMap<>();
+        Map<String, Float> map = new LinkedHashMap<>();
         Vector data = getParameterVector(dataset.datasetName);
         String[] names = (String[]) data.get(0);
         double[] values = (double[]) data.get(1);
@@ -247,7 +250,7 @@ public class Flash3MetaData extends Hdf5MetaData {
     }
 
     private Map<String, String> fillStringInfos(Flash3Dataset dataset) throws Exception {
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new LinkedHashMap<>();
         Vector data = getParameterVector(dataset.datasetName);
         String[] names = (String[]) data.get(0);
         String[] values = (String[]) data.get(1);
@@ -330,6 +333,13 @@ public class Flash3MetaData extends Hdf5MetaData {
         if (parameter == null)
             throw new NoSuchElementException("There is no integer scalar with the name '" + name + "'!");
         return parameter;
+    }
+
+    /**
+     * @return An unmodifiable view of the integer scalars
+     */
+    public Map<String, Integer> getIntegerSclars() {
+        return integerSclars;
     }
 
     /**

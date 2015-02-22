@@ -47,7 +47,7 @@ public class Hdf5MetaData {
      *
      * @return an unmodifiable version of the dataset map
      */
-    Map<String, Dataset> getDatasetMap() {
+    public Map<String, Dataset> getDatasetMap() {
         if (isClosed)
             throw new IllegalStateException("Reader was closed, no access to datasets!");
         return datasetMap;
@@ -58,7 +58,7 @@ public class Hdf5MetaData {
      *
      * @return The given dataset
      */
-    Dataset getDataset(String datasetName) {
+    public Dataset getDataset(String datasetName) {
         if (isClosed)
             throw new IllegalStateException("Reader was closed, no access to datasets!");
         return datasetMap.get(datasetName);
