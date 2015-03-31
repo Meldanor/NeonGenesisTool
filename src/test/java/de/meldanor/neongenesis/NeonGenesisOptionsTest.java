@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Kilian GÃ¤rtner
+ * Copyright (c) 2015 Kilian Gärtner
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,29 +25,34 @@
 package de.meldanor.neongenesis;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
- * The entry class of the program
+ *
  */
-public class Core {
+public class NeonGenesisOptionsTest {
 
-    public static void main(String[] args) {
-        // Parse the command line
+    @Test
+    public void simpleTest() {
         NeonGenesisOptions options = new NeonGenesisOptions();
-        JCommander commander;
-        try {
-            commander = new JCommander(options, args);
-        }catch (ParameterException ex) {
-            // Error with the parameters -> display help
-            System.out.println(ex.getMessage());
-            StringBuilder tmp = new StringBuilder();
-            new JCommander(options, "-h").usage(tmp);
-            System.out.println(tmp.toString());
-            return;
-        }
+        String[] args = {"-id", "inputDir", "--outputDirectory", "outputDir", "-rt", "median"};
+        new JCommander(options, args);
 
-        // Invoke the actually program
-        new NeonGenesis(options, commander);
+        assertEquals("inputDir", options.inputDirectory);
+        assertEquals("outputDir", options.outputDirecoty);
+        assertEquals("median", options.reduceType);
+    }
+
+    @Test(expected = Exception.class)
+    public void missingArgumentTest() {
+        NeonGenesisOptions options = new NeonGenesisOptions();
+        String[] args = {"--outputDirectory", "outputDir", "-rt", "median"};
+        new JCommander(options, args);
+
+
+        assertEquals("outputDir", options.outputDirecoty);
+        assertEquals("median", options.reduceType);
     }
 }
