@@ -124,23 +124,12 @@
             <version>2.11.0</version>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>org.hdfgroup</groupId>-->
-        <!--<artifactId>jarhdf5-runtime</artifactId>-->
-        <!--<version>2.11.0</version>-->
-        <!--<scope>runtime</scope>-->
-        <!--&lt;!&ndash;<systemPath>${basedir}/libs/org/hdfgroup/jarhdf5-runtime/2.11.0/jarhdf5-runtime-2.11.0.dll</systemPath>&ndash;&gt;-->
-        <!--<type>dll</type>-->
-        <!--</dependency>-->
 
-        <!--<dependency>-->
-        <!--<groupId>org.hdfgroup</groupId>-->
-        <!--<artifactId>jarhdf-runtime</artifactId>-->
-        <!--<version>2.11.0</version>-->
-        <!--<scope>runtime</scope>-->
-        <!--&lt;!&ndash;<systemPath>${basedir}/libs/org/hdfgroup/jarhdf-runtime/2.11.0/jarhdf-runtime-2.11.0.dll</systemPath>&ndash;&gt;-->
-        <!--<type>dll</type>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.2</version>
+        </dependency>
     </dependencies>
 
     <repositories>

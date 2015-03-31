@@ -26,11 +26,15 @@ package de.meldanor.neongenesis;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * The entry class of the program
  */
 public class Core {
+
+    public static final Logger logger = LogManager.getLogger();
 
     public static void main(String[] args) {
         // Parse the command line
@@ -40,10 +44,10 @@ public class Core {
             commander = new JCommander(options, args);
         }catch (ParameterException ex) {
             // Error with the parameters -> display help
-            System.out.println(ex.getMessage());
+            logger.error(ex.getMessage());
             StringBuilder tmp = new StringBuilder();
             new JCommander(options, "-h").usage(tmp);
-            System.out.println(tmp.toString());
+            logger.info(tmp.toString());
             return;
         }
 

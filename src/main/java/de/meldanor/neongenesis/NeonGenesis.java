@@ -38,19 +38,19 @@ public class NeonGenesis {
 
     public NeonGenesis(NeonGenesisOptions options, JCommander commander) {
 
-        System.out.println("Hello World, this is NeonGenesis!");
+        Core.logger.info("Hello World, this is NeonGenesis!");
 
         // Check if the input exists
         File inputDirectory = new File(options.inputDirectory);
         if (!inputDirectory.exists()) {
-            System.err.println("The input directory '" + options.inputDirectory + "' does not exist!");
+            Core.logger.error("The input directory '" + options.inputDirectory + "' does not exist!");
             return;
         }
 
         // Check if the input director has files
         File[] files = inputDirectory.listFiles(pathname -> !pathname.isDirectory());
         if (files == null || files.length == 0) {
-            System.err.println("The input directory '" + inputDirectory + "' is empty!");
+            Core.logger.error("The input directory '" + inputDirectory + "' is empty!");
             return;
         }
 
@@ -63,7 +63,7 @@ public class NeonGenesis {
             outputDirectory.mkdirs();
         }
         builder.outputDirectory(outputDirectory);
-        System.out.println("The reduced files will be placed in '" + outputDirectory + "'");
+        Core.logger.info("The reduced files will be placed in '" + outputDirectory + "'");
 
         // Get the type
         // TODO: Use factory pattern instead switch
@@ -78,46 +78,46 @@ public class NeonGenesis {
                 break;
             // Unknown type
             default:
-                System.err.println("Unknown reducer type '" + options.reduceType + "'!");
+                Core.logger.error("Unknown reducer type '" + options.reduceType + "'!");
                 StringBuilder tmp = new StringBuilder();
                 commander.usage("-rt", tmp);
-                System.err.println(tmp.toString());
+                Core.logger.info(tmp.toString());
                 return;
         }
         builder.strategy(reducer);
-        System.out.println("The strategy for reduction is '" + reducer.name() + "'.");
+        Core.logger.info("The strategy for reduction is '" + reducer.name() + "'.");
 
         // Extract the datasets to reduce - if the option was not use, reduce all
         if (options.datasetsToReduce == null || options.datasetsToReduce.isEmpty()) {
             builder.reduceAllVariableDatasets();
-            System.out.println("No datasets to reduced specified - reduce all!");
+            Core.logger.info("No datasets to reduced specified - reduce all!");
         } else {
             builder.variableDatasetsNames(options.datasetsToReduce);
-            System.out.println("Reduce only the following datasets: " + String.join(",", options.datasetsToReduce));
+            Core.logger.info("Reduce only the following datasets: " + String.join(",", options.datasetsToReduce));
         }
 
         boolean isVerbose = options.verbose;
         if (isVerbose)
-            System.out.println("Verbose mode active. Display more information about the process");
+            Core.logger.info("Verbose mode active. Display more information about the process");
 
         // Create the process and invoke it
         ReductionProcess reductionProcess = builder.build();
 
-        System.out.println("Start reduction process of " + files.length + " files");
+        Core.logger.info("Start reduction process of " + files.length + " files");
 
         for (int i = 0; i < files.length; i++) {
             File inputFile = files[i];
 
             try {
-                System.out.println("Start reducing file(" + (i + 1) + "/" + files.length + ") '" + getFileInformation(isVerbose, inputFile) + "'!");
+                Core.logger.info("Start reducing file(" + (i + 1) + "/" + files.length + ") '" + getFileInformation(isVerbose, inputFile) + "'!");
                 reductionProcess.reduceFile(inputFile);
-                System.out.println("Finished reducing file '" + inputFile + "'!");
+                Core.logger.info("Finished reducing file '" + inputFile + "'!");
             } catch (Exception e) {
-                System.err.println("An error occurred while processing file '" + inputFile + "'!");
+                Core.logger.error("An error occurred while processing file '" + inputFile + "'!");
                 e.printStackTrace();
             }
         }
-        System.out.println("Finished reduction process!");
+        Core.logger.info("Finished reduction process!");
 
     }
 
@@ -125,7 +125,6 @@ public class NeonGenesis {
         if (!isVerbose)
             return file.toString();
         else {
-
             return file.toString() + "(" + file.length() / 1024 / 1024 + " MB)";
         }
     }
