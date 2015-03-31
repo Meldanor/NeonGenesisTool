@@ -50,14 +50,112 @@
             <artifactId>jcommander</artifactId>
             <version>1.30</version>
         </dependency>
+
+        <!--Local dependency of HDF5 library -->
+        <dependency>
+            <groupId>org.hdfgroup</groupId>
+            <artifactId>fits</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hdfgroup</groupId>
+            <artifactId>jarfitsobj</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hdfgroup</groupId>
+            <artifactId>jarh4obj</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hdfgroup</groupId>
+            <artifactId>jarh5obj</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hdfgroup</groupId>
+            <artifactId>jarhdf5</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hdfgroup</groupId>
+            <artifactId>jarhdf</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hdfgroup</groupId>
+            <artifactId>jarhdfobj</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hdfgroup</groupId>
+            <artifactId>jarnc2obj</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hdfgroup</groupId>
+            <artifactId>jhdfview</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hdfgroup</groupId>
+            <artifactId>netcdf</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hdfgroup</groupId>
+            <artifactId>slf4j-api-1.7.5</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hdfgroup</groupId>
+            <artifactId>slf4j-nop-1.7.5</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+        <!--<dependency>-->
+        <!--<groupId>org.hdfgroup</groupId>-->
+        <!--<artifactId>jarhdf5-runtime</artifactId>-->
+        <!--<version>2.11.0</version>-->
+        <!--<scope>runtime</scope>-->
+        <!--&lt;!&ndash;<systemPath>${basedir}/libs/org/hdfgroup/jarhdf5-runtime/2.11.0/jarhdf5-runtime-2.11.0.dll</systemPath>&ndash;&gt;-->
+        <!--<type>dll</type>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+        <!--<groupId>org.hdfgroup</groupId>-->
+        <!--<artifactId>jarhdf-runtime</artifactId>-->
+        <!--<version>2.11.0</version>-->
+        <!--<scope>runtime</scope>-->
+        <!--&lt;!&ndash;<systemPath>${basedir}/libs/org/hdfgroup/jarhdf-runtime/2.11.0/jarhdf-runtime-2.11.0.dll</systemPath>&ndash;&gt;-->
+        <!--<type>dll</type>-->
+        <!--</dependency>-->
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>my-local-repo</id>
+            <url>file://${basedir}/libs</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
+                <version>3.3</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -66,13 +164,55 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                    <echo>Using env.test.properties</echo>
+                                    <copy file="lib/jhdf.dll" tofile="${basedir}/target/jhdf.dll"/>
+                                    <echo>Using env.test.properties</echo>
+                                    <copy file="lib/jhdf5.dll" tofile="${basedir}/target/jhdf5.dll"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.1</version>
+                <version>2.10.2</version>
                 <configuration>
                     <additionalparam>-Xdoclint:none</additionalparam>
                 </configuration>
             </plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>de.meldanor.neongenesis.Core</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

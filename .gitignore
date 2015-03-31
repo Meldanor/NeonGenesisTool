@@ -73,3 +73,5 @@ crashlytics.properties
 crashlytics-build.properties
 
 !lib/*
+!libs/*
+dependency-reduced-pom.xml
