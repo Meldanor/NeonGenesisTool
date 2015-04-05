@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Kilian GÃ¤rtner
+ * Copyright (c) 2015 Kilian Gärtner
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,33 +22,12 @@
  * THE SOFTWARE.
  */
 
-package de.meldanor.neongenesis.reduce;
+package de.meldanor.neongenesis.downsample;
 
 /**
- * Reduce a set of values to a single value based on statistical algorithm.
  *
- * @apiNote The algorithm implementation should be immutable and thread-safe.
- * <p>
- * It is not necessary to have a public constructor, default visibility is enough,
- * because they are created by {@link ReducerFactory}.
- * @see ReducerFactory
  */
-public interface StatisticalReducer {
+public interface ReducerType {
 
-    /**
-     * Reduce an array of integer to one integer. 
-     *
-     * @param array The values
-     * @return The reduced value
-     * @implNote The reduced value, if calculated with real numbers, MUST be rounded and not only casted.
-     */
-    public int reduce(int[] array);
-
-    /**
-     * Reduce an array of floats to one float.
-     *
-     * @param array The values
-     * @return The reduced value
-     */
-    public float reduce(float[] array);
+    String name();
 }

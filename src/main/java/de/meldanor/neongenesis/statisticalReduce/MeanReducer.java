@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package de.meldanor.neongenesis.reduce;
+package de.meldanor.neongenesis.statisticalReduce;
 
 /**
  * Reduce an array to its mean.

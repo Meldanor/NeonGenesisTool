@@ -22,31 +22,33 @@
  * THE SOFTWARE.
  */
 
-package de.meldanor.neongenesis.reduce;
+package de.meldanor.neongenesis.statisticalReduce;
+
+import de.meldanor.neongenesis.downsample.ReducerType;
 
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
 /**
- * A factory for get {@link StatisticalReducer}.
+ * A factory for get {@link de.meldanor.neongenesis.statisticalReduce.StatisticalReducer}.
  *
- * @see ReducerFactory.Reducer
- * @see StatisticalReducer
+ * @see StatisticalReducerType
+ * @see de.meldanor.neongenesis.statisticalReduce.StatisticalReducer
  */
-public class ReducerFactory {
+public class StatisticalReducerFactory {
 
-    private Map<Reducer, StatisticalReducer> reducerMap;
+    private Map<StatisticalReducerType, de.meldanor.neongenesis.statisticalReduce.StatisticalReducer> reducerMap;
 
-    private static ReducerFactory ourInstance = new ReducerFactory();
+    private static StatisticalReducerFactory ourInstance = new StatisticalReducerFactory();
 
-    public static ReducerFactory getInstance() {
+    public static StatisticalReducerFactory getInstance() {
         return ourInstance;
     }
 
-    private ReducerFactory() {
-        this.reducerMap = new EnumMap<>(Reducer.class);
-        for (Reducer reducer : Reducer.values()) {
+    private StatisticalReducerFactory() {
+        this.reducerMap = new EnumMap<>(StatisticalReducerType.class);
+        for (StatisticalReducerType reducer : StatisticalReducerType.values()) {
             reducerMap.put(reducer, reducer.reducerSupplier.get());
         }
     }
@@ -54,9 +56,9 @@ public class ReducerFactory {
     /**
      * The types of reducing.
      *
-     * @see StatisticalReducer
+     * @see de.meldanor.neongenesis.statisticalReduce.StatisticalReducer
      */
-    public enum Reducer {
+    public enum StatisticalReducerType implements ReducerType {
         /**
          * Using the mean for reducing a set.
          *
@@ -70,9 +72,9 @@ public class ReducerFactory {
          */
         MEDIAN(MedianReducer::new);
 
-        private final Supplier<StatisticalReducer> reducerSupplier;
+        private final Supplier<de.meldanor.neongenesis.statisticalReduce.StatisticalReducer> reducerSupplier;
 
-        Reducer(Supplier<StatisticalReducer> reducerSupplier) {
+        StatisticalReducerType(Supplier<de.meldanor.neongenesis.statisticalReduce.StatisticalReducer> reducerSupplier) {
 
             this.reducerSupplier = reducerSupplier;
         }
@@ -85,7 +87,7 @@ public class ReducerFactory {
      * @param type The type of the reducing
      * @return The statistical reducer assigned to the type
      */
-    public StatisticalReducer getReducer(Reducer type) {
+    public de.meldanor.neongenesis.statisticalReduce.StatisticalReducer getReducer(StatisticalReducerType type) {
         return reducerMap.get(type);
     }
 }

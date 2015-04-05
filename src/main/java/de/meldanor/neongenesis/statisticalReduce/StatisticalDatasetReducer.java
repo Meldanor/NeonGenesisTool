@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package de.meldanor.neongenesis.reduce;
+package de.meldanor.neongenesis.statisticalReduce;
 
 import de.meldanor.neongenesis.hdf5.Block;
 import de.meldanor.neongenesis.hdf5.BlockTree;
@@ -41,7 +41,7 @@ import java.util.List;
  *
  * @see StatisticalReducer
  */
-public class CellReducer {
+public class StatisticalDatasetReducer {
 
     private static final String BLOCK_COUNT = "globalnumblocks";
 
@@ -58,12 +58,12 @@ public class CellReducer {
      *                           resolution will be 4x4x4
      * @param type               The strategy to reduce an amount of cells
      */
-    public CellReducer(Point3D originalDimensions, ReducerFactory.Reducer type) {
+    public StatisticalDatasetReducer(Point3D originalDimensions, StatisticalReducerFactory.StatisticalReducerType type) {
         this.originalXDimension = (int) originalDimensions.getX();
         this.originalYDimension = (int) originalDimensions.getY();
         this.originalZDimension = (int) originalDimensions.getZ();
 
-        this.reducer = ReducerFactory.getInstance().getReducer(type);
+        this.reducer = StatisticalReducerFactory.getInstance().getReducer(type);
     }
 
     /**

@@ -24,33 +24,34 @@
 
 package de.meldanor.neongenesis.downsample;
 
-import de.meldanor.neongenesis.reduce.ReducerFactory;
+import de.meldanor.neongenesis.statisticalReduce.StatisticalReducerFactory;
+import de.meldanor.neongenesis.statisticalReduce.StatisticalReductionProcess;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Used to create an {@link de.meldanor.neongenesis.downsample.ReductionProcess}.
+ * Used to create an {@link StatisticalReductionProcess}.
  *
- * @see de.meldanor.neongenesis.downsample.ReductionProcess
+ * @see StatisticalReductionProcess
  */
 public class ReductionProcessBuilder {
 
-    private ReducerFactory.Reducer strategy;
+    private ReducerType strategy;
     private List<String> variableDatasetsNames;
 
     private File targetDirectory;
 
     private ReductionProcessBuilder() {
-        this.strategy = ReducerFactory.Reducer.MEDIAN;
+        this.strategy = StatisticalReducerFactory.StatisticalReducerType.MEDIAN;
     }
 
     public static ReductionProcessBuilder create() {
         return new ReductionProcessBuilder();
     }
 
-    public ReductionProcessBuilder strategy(ReducerFactory.Reducer strategy) {
+    public ReductionProcessBuilder strategy(ReducerType strategy) {
         this.strategy = strategy;
         return this;
     }
@@ -69,7 +70,7 @@ public class ReductionProcessBuilder {
         return this;
     }
 
-    public ReductionProcess build() {
+    public StatisticalReductionProcess build() {
         File targetDirectory = this.targetDirectory;
         if (targetDirectory == null)
             targetDirectory = new File(".");
@@ -77,7 +78,16 @@ public class ReductionProcessBuilder {
             //noinspection ResultOfMethodCallIgnored
             targetDirectory.mkdirs();
         }
-        return new ReductionProcess(strategy, (variableDatasetsNames == null ? Collections.emptyList() : variableDatasetsNames), targetDirectory);
+        if (strategy instanceof StatisticalReducerFactory.StatisticalReducerType)
+            return new StatisticalReductionProcess((StatisticalReducerFactory.StatisticalReducerType) strategy,
+                    (variableDatasetsNames == null ? Collections.emptyList() : variableDatasetsNames),
+                    targetDirectory
+            );
+        else {
+            throw new IllegalArgumentException("Unknown strategy " + strategy);
+        }
 
     }
+
+
 }

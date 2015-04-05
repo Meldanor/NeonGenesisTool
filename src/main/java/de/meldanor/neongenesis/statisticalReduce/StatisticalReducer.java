@@ -22,40 +22,33 @@
  * THE SOFTWARE.
  */
 
-package de.meldanor.neongenesis.reduce;
-
-import java.util.Arrays;
+package de.meldanor.neongenesis.statisticalReduce;
 
 /**
- * Reduce an array to its median. The median is defined as the middle of a sorted set. If the set has even members and
- * has no unique middle, the mean is calculate from the middle element and its predecessor.
+ * Reduce a set of values to a single value based on statistical algorithm.
  *
- * @apiNote The median is calculated by sorting the Array with {@link Arrays#sort}.
+ * @apiNote The algorithm implementation should be immutable and thread-safe.
  * <p>
- * If the integer array is even, the middle will be rounded by {@link Math#round}.
+ * It is not necessary to have a public constructor, default visibility is enough,
+ * because they are created by {@link StatisticalReducerFactory}.
+ * @see StatisticalReducerFactory
  */
-public class MedianReducer implements StatisticalReducer {
+public interface StatisticalReducer {
 
-    MedianReducer() {
-    }
+    /**
+     * Reduce an array of integer to one integer. 
+     *
+     * @param array The values
+     * @return The reduced value
+     * @implNote The reduced value, if calculated with real numbers, MUST be rounded and not only casted.
+     */
+    int reduce(int[] array);
 
-    @Override
-    public int reduce(int[] array) {
-        Arrays.sort(array);
-        int middle = array.length / 2;
-        if (array.length % 2 == 1)
-            return array[middle];
-        else
-            return (int) Math.round((array[middle] + array[middle - 1]) / 2.0);
-    }
-
-    @Override
-    public float reduce(float[] array) {
-        Arrays.sort(array);
-        int middle = array.length / 2;
-        if (array.length % 2 == 1)
-            return array[middle];
-        else
-            return (array[middle] + array[middle - 1]) / 2.0F;
-    }
+    /**
+     * Reduce an array of floats to one float.
+     *
+     * @param array The values
+     * @return The reduced value
+     */
+    float reduce(float[] array);
 }

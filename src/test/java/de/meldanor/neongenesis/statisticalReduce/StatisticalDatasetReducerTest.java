@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package de.meldanor.neongenesis.reduce;
+package de.meldanor.neongenesis.statisticalReduce;
 
 import de.meldanor.neongenesis.hdf5.Flash3Reader;
 import javafx.geometry.Point3D;
@@ -33,14 +33,10 @@ import org.junit.rules.ExternalResource;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-public class CellReducerTest {
+public class StatisticalDatasetReducerTest {
 
     private static final String X_DIMENSION = "nxb";
     private static final String Y_DIMENSION = "nyb";
@@ -74,14 +70,14 @@ public class CellReducerTest {
 
     @Test
     public void testSingleFloatDataset() throws Exception {
-        CellReducer reducer = new CellReducer(sourceDimension, ReducerFactory.Reducer.MEAN);
+        StatisticalDatasetReducer reducer = new StatisticalDatasetReducer(sourceDimension, StatisticalReducerFactory.StatisticalReducerType.MEAN);
         List<float[]> dens = reducer.reduceFloatDataset(source, "dens");
         assertTrue(dens.size() > 1);
     }
 
     @Test
     public void testAllFloatDataset() throws Exception {
-        CellReducer reducer = new CellReducer(sourceDimension, ReducerFactory.Reducer.MEAN);
+        StatisticalDatasetReducer reducer = new StatisticalDatasetReducer(sourceDimension, StatisticalReducerFactory.StatisticalReducerType.MEAN);
         List<String> datasets = Arrays.asList("dens", "eint", "ener", "gpot", "metl", "ms_h", "ms_i", "pres", "temp", "velx", "vely", "velz");
         for (String dataset : datasets) {
             List<float[]> result = reducer.reduceFloatDataset(source, dataset);
@@ -91,7 +87,7 @@ public class CellReducerTest {
 
     @Test
     public void testAllFloatDatasetParallel() throws Exception {
-        CellReducer reducer = new CellReducer(sourceDimension, ReducerFactory.Reducer.MEAN);
+        StatisticalDatasetReducer reducer = new StatisticalDatasetReducer(sourceDimension, StatisticalReducerFactory.StatisticalReducerType.MEAN);
         List<String> datasets = Arrays.asList("dens", "eint", "ener", "gpot", "metl", "ms_h", "ms_i", "pres", "temp", "velx", "vely", "velz");
 
         Map<String, List<float[]>> serialResults = new TreeMap<>();

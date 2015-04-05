@@ -25,9 +25,10 @@
 package de.meldanor.neongenesis;
 
 import com.beust.jcommander.JCommander;
-import de.meldanor.neongenesis.downsample.ReductionProcess;
+import de.meldanor.neongenesis.downsample.ReducerType;
 import de.meldanor.neongenesis.downsample.ReductionProcessBuilder;
-import de.meldanor.neongenesis.reduce.ReducerFactory;
+import de.meldanor.neongenesis.statisticalReduce.StatisticalReductionProcess;
+import de.meldanor.neongenesis.statisticalReduce.StatisticalReducerFactory;
 
 import java.io.File;
 
@@ -68,13 +69,13 @@ public class NeonGenesis {
         // Get the type
         // TODO: Use factory pattern instead switch
         // TODO: Implement physically based ones
-        ReducerFactory.Reducer reducer;
+        ReducerType reducer;
         switch (options.reduceType.toLowerCase()) {
             case "median":
-                reducer = ReducerFactory.Reducer.MEDIAN;
+                reducer = StatisticalReducerFactory.StatisticalReducerType.MEDIAN;
                 break;
             case "mean":
-                reducer = ReducerFactory.Reducer.MEAN;
+                reducer = StatisticalReducerFactory.StatisticalReducerType.MEAN;
                 break;
             // Unknown type
             default:
@@ -101,7 +102,7 @@ public class NeonGenesis {
             Core.logger.info("Verbose mode active. Display more information about the process");
 
         // Create the process and invoke it
-        ReductionProcess reductionProcess = builder.build();
+        StatisticalReductionProcess reductionProcess = builder.build();
 
         Core.logger.info("Start reduction process of " + files.length + " files");
 

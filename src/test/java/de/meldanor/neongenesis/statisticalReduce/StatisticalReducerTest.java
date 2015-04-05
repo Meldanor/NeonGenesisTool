@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package de.meldanor.neongenesis.reduce;
+package de.meldanor.neongenesis.statisticalReduce;
 
 import org.junit.Test;
 
@@ -32,7 +32,7 @@ public class StatisticalReducerTest {
 
     @Test
     public void testMedianReducer() {
-        StatisticalReducer reducer = ReducerFactory.getInstance().getReducer(ReducerFactory.Reducer.MEDIAN);
+        StatisticalReducer reducer = StatisticalReducerFactory.getInstance().getReducer(StatisticalReducerFactory.StatisticalReducerType.MEDIAN);
         int[] intArray = {1, 2, 3, 4, 5, 6};
         assertEquals(4, reducer.reduce(intArray));
 
@@ -45,7 +45,7 @@ public class StatisticalReducerTest {
 
     @Test
     public void testMeanReducer() {
-        StatisticalReducer reducer = ReducerFactory.getInstance().getReducer(ReducerFactory.Reducer.MEAN);
+        StatisticalReducer reducer = StatisticalReducerFactory.getInstance().getReducer(StatisticalReducerFactory.StatisticalReducerType.MEAN);
         int[] intArray = {100, 2, 3, 4, 5, 6};
         assertEquals(20, reducer.reduce(intArray));
 

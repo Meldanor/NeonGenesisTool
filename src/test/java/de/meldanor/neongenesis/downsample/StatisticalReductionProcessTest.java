@@ -24,7 +24,8 @@
 
 package de.meldanor.neongenesis.downsample;
 
-import de.meldanor.neongenesis.reduce.ReducerFactory;
+import de.meldanor.neongenesis.statisticalReduce.StatisticalReducerFactory;
+import de.meldanor.neongenesis.statisticalReduce.StatisticalReductionProcess;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,7 +33,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 
-public class ReductionProcessTest {
+public class StatisticalReductionProcessTest {
 
     static String FILE = "D:/Studium/Bachelorarbeit/plotfiles/hvc_hdf5_plt_cnt_0000";
 
@@ -44,8 +45,8 @@ public class ReductionProcessTest {
     @Test
     public void testReduceFile() throws Exception {
         ReductionProcessBuilder builder = ReductionProcessBuilder.create();
-        ReductionProcess build = builder.reduceAllVariableDatasets()
-                .strategy(ReducerFactory.Reducer.MEAN)
+        StatisticalReductionProcess build = builder.reduceAllVariableDatasets()
+                .strategy(StatisticalReducerFactory.StatisticalReducerType.MEAN)
                 .outputDirectory(folder.newFolder())
                 .build();
 

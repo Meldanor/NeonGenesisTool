@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Kilian GÃ¤rtner
+ * Copyright (c) 2015 Kilian Gärtner
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,8 +28,8 @@ import de.meldanor.neongenesis.hdf5.Flash3DataTypes;
 import de.meldanor.neongenesis.hdf5.Flash3MetaData;
 import de.meldanor.neongenesis.hdf5.Flash3Reader;
 import de.meldanor.neongenesis.hdf5.Hdf5Writer;
-import de.meldanor.neongenesis.reduce.CellReducer;
-import de.meldanor.neongenesis.reduce.ReducerFactory;
+import de.meldanor.neongenesis.statisticalReduce.StatisticalDatasetReducer;
+import de.meldanor.neongenesis.statisticalReduce.StatisticalReducerFactory;
 import javafx.geometry.Point3D;
 import ncsa.hdf.object.Attribute;
 import ncsa.hdf.object.Dataset;
@@ -39,31 +39,23 @@ import java.io.File;
 import java.util.*;
 
 /**
- * An object to reduce a certain dataset for lower latency.
- * <p>
- * The class is thread-safe!
  *
- * @see de.meldanor.neongenesis.downsample.ReductionProcessBuilder
  */
-public class ReductionProcess {
-
+public abstract class AbstractReductionProcess {
+    public static final String GLOBALNUMBLOCKS = "globalnumblocks";
     private static final String X_DIMENSION = "nxb";
     private static final String Y_DIMENSION = "nyb";
     private static final String Z_DIMENSION = "nzb";
-
     private static final String NAME_DATATYPE = "name";
     private static final String VALUE_DATATYPE = "value";
-    public static final String GLOBALNUMBLOCKS = "globalnumblocks";
+    protected final StatisticalReducerFactory.StatisticalReducerType strategy;
+    protected final List<String> variableDatasetsNames;
+    protected final File targetDirectory;
 
-    private final ReducerFactory.Reducer strategy;
-    private final List<String> variableDatasetsNames;
-
-    private final File targetDirectory;
-
-    ReductionProcess(ReducerFactory.Reducer strategy, List<String> variableDatasetsNames, File targetDirectory) {
-        this.strategy = strategy;
+    public AbstractReductionProcess(List<String> variableDatasetsNames, File targetDirectory, StatisticalReducerFactory.StatisticalReducerType strategy) {
         this.variableDatasetsNames = variableDatasetsNames;
         this.targetDirectory = targetDirectory;
+        this.strategy = strategy;
     }
 
     /**
@@ -76,7 +68,7 @@ public class ReductionProcess {
     public void reduceFile(File file) throws Exception {
         Flash3Reader reader = new Flash3Reader(file);
         Point3D originalDimensions = getDimension(reader.getMetaData());
-        CellReducer reducer = new CellReducer(originalDimensions, strategy);
+        StatisticalDatasetReducer reducer = new StatisticalDatasetReducer(originalDimensions, strategy);
 
         File newFile = new File(targetDirectory, file.getName() + "_reduced");
 
@@ -89,7 +81,7 @@ public class ReductionProcess {
         writer.close();
     }
 
-    private Point3D getDimension(Flash3MetaData metaData) {
+    protected Point3D getDimension(Flash3MetaData metaData) {
 
         int xDimension = metaData.getIntegerSclar(X_DIMENSION);
         int yDimension = metaData.getIntegerSclar(Y_DIMENSION);
@@ -142,44 +134,9 @@ public class ReductionProcess {
         destination.writeCompound(Flash3MetaData.Flash3Dataset.INTEGER_SCALARS.getDatasetName(), data, datatypes, memberSizes, integerSclars.size());
     }
 
-    private void reduceDatasets(CellReducer reducer, Flash3Reader source, Hdf5Writer destination) throws Exception {
-        Map<String, Dataset> variableMap = source.getMetaData().getVariableMap();
+    protected abstract void reduceDatasets(StatisticalDatasetReducer reducer, Flash3Reader source, Hdf5Writer destination) throws Exception;
 
-        Point3D dimension = getDimension(source.getMetaData());
-        int xDim = (int) (dimension.getX() / 2);
-        int yDim = (int) (dimension.getY() / 2);
-        int zDim = (int) (dimension.getZ() / 2);
-
-        Buffer buffer = new Buffer(source.getMetaData(), xDim, yDim, zDim);
-
-        List<String> datasetsToReduce = this.variableDatasetsNames;
-        if (datasetsToReduce.isEmpty())
-            datasetsToReduce = new ArrayList<>(variableMap.keySet());
-
-        for (String dataset : datasetsToReduce) {
-            reduceDataset(dataset, reducer, source, destination, buffer);
-        }
-
-    }
-
-    private void reduceDataset(String datasetName, CellReducer reducer, Flash3Reader source, Hdf5Writer destination, Buffer buffer) throws Exception {
-        Dataset dataset = source.getMetaData().getDataset(datasetName);
-        dataset.init();
-        switch (dataset.getDatatype().getDatatypeClass()) {
-            case Datatype.CLASS_FLOAT:
-                List<float[]> floats = reducer.reduceFloatDataset(source, datasetName);
-                writeReducedFloatDataset(floats, datasetName, source, destination, buffer);
-                break;
-            case Datatype.CLASS_INTEGER:
-                List<int[]> ints = reducer.reduceIntDataset(source, datasetName);
-                writeReducedIntDataset(ints, datasetName, source, destination, buffer);
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported datatype found while reducing! Datatype: " + dataset.getDatatype());
-        }
-    }
-
-    private void writeReducedIntDataset(List<int[]> ints, String datasetName, Flash3Reader source, Hdf5Writer writer, Buffer buffer) throws Exception {
+    protected void writeReducedIntDataset(List<int[]> ints, String datasetName, Flash3Reader source, Hdf5Writer writer, Buffer buffer) throws Exception {
 
         int[] flattenArray = buffer.flattenIntArray;
         int min = Integer.MAX_VALUE;
@@ -206,7 +163,7 @@ public class ReductionProcess {
         writer.writeIntDataset(datasetName, flattenArray, Arrays.asList(maxAttribute, minAttribute), ints.size(), xDim, yDim, zDim);
     }
 
-    private void writeReducedFloatDataset(List<float[]> floats, String datasetName, Flash3Reader source, Hdf5Writer writer, Buffer buffer) throws Exception {
+    protected void writeReducedFloatDataset(List<float[]> floats, String datasetName, Flash3Reader source, Hdf5Writer writer, Buffer buffer) throws Exception {
 
         float[] flattenArray = buffer.flattenFloatArray;
         float min = Float.MAX_VALUE;
@@ -233,7 +190,7 @@ public class ReductionProcess {
         writer.writeFloatDataset(datasetName, flattenArray, Arrays.asList(maxAttribute, minAttribute), floats.size(), xDim, yDim, zDim);
     }
 
-    private class Buffer {
+    protected class Buffer {
         float[] flattenFloatArray;
         int[] flattenIntArray;
 
