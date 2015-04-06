@@ -419,4 +419,8 @@ public class Flash3MetaData extends Hdf5MetaData {
             throw new NoSuchElementException("There is no string scalar with the name '" + name + "'!");
         return parameter;
     }
+
+    public int getBlockCount() {
+        return getIntegerSclar("globalnumblocks");
+    }
 }

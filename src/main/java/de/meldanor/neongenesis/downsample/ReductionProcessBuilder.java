@@ -24,6 +24,8 @@
 
 package de.meldanor.neongenesis.downsample;
 
+import de.meldanor.neongenesis.physicalReduce.PhysicalReducerType;
+import de.meldanor.neongenesis.physicalReduce.PhysicalReductionProcess;
 import de.meldanor.neongenesis.statisticalReduce.StatisticalReducerFactory;
 import de.meldanor.neongenesis.statisticalReduce.StatisticalReductionProcess;
 
@@ -70,7 +72,7 @@ public class ReductionProcessBuilder {
         return this;
     }
 
-    public StatisticalReductionProcess build() {
+    public AbstractReductionProcess build() {
         File targetDirectory = this.targetDirectory;
         if (targetDirectory == null)
             targetDirectory = new File(".");
@@ -83,6 +85,21 @@ public class ReductionProcessBuilder {
                     (variableDatasetsNames == null ? Collections.emptyList() : variableDatasetsNames),
                     targetDirectory
             );
+        else if (strategy instanceof PhysicalReducerType) {
+
+
+            if (strategy == PhysicalReducerType.PHYSICAL_MEAN)
+                strategy = StatisticalReducerFactory.StatisticalReducerType.MEAN;
+            else if (strategy == PhysicalReducerType.PHYSICAL_MEDIAN)
+                strategy = StatisticalReducerFactory.StatisticalReducerType.MEDIAN;
+            else
+                throw new IllegalArgumentException("Unknown strategy " + strategy);
+
+            return new PhysicalReductionProcess((StatisticalReducerFactory.StatisticalReducerType) strategy,
+                    (variableDatasetsNames == null ? Collections.emptyList() : variableDatasetsNames),
+                    targetDirectory
+            );
+        }
         else {
             throw new IllegalArgumentException("Unknown strategy " + strategy);
         }

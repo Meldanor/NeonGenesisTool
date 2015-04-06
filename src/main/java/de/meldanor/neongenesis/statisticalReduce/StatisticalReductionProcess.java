@@ -27,8 +27,6 @@ package de.meldanor.neongenesis.statisticalReduce;
 import de.meldanor.neongenesis.downsample.AbstractReductionProcess;
 import de.meldanor.neongenesis.hdf5.Flash3Reader;
 import de.meldanor.neongenesis.hdf5.Hdf5Writer;
-import de.meldanor.neongenesis.statisticalReduce.StatisticalDatasetReducer;
-import de.meldanor.neongenesis.statisticalReduce.StatisticalReducerFactory;
 import javafx.geometry.Point3D;
 import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.Datatype;
@@ -47,7 +45,7 @@ import java.util.Map;
  */
 public class StatisticalReductionProcess extends AbstractReductionProcess {
 
-    StatisticalReductionProcess(StatisticalReducerFactory.StatisticalReducerType strategy, List<String> variableDatasetsNames, File targetDirectory) {
+    public StatisticalReductionProcess(StatisticalReducerFactory.StatisticalReducerType strategy, List<String> variableDatasetsNames, File targetDirectory) {
         super(variableDatasetsNames, targetDirectory, strategy);
     }
 

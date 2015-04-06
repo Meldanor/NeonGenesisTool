@@ -25,9 +25,10 @@
 package de.meldanor.neongenesis;
 
 import com.beust.jcommander.JCommander;
+import de.meldanor.neongenesis.downsample.AbstractReductionProcess;
 import de.meldanor.neongenesis.downsample.ReducerType;
 import de.meldanor.neongenesis.downsample.ReductionProcessBuilder;
-import de.meldanor.neongenesis.statisticalReduce.StatisticalReductionProcess;
+import de.meldanor.neongenesis.physicalReduce.PhysicalReducerType;
 import de.meldanor.neongenesis.statisticalReduce.StatisticalReducerFactory;
 
 import java.io.File;
@@ -77,6 +78,12 @@ public class NeonGenesis {
             case "mean":
                 reducer = StatisticalReducerFactory.StatisticalReducerType.MEAN;
                 break;
+            case "physicalmean":
+                reducer = PhysicalReducerType.PHYSICAL_MEAN;
+                break;
+            case "physicalmedian":
+                reducer = PhysicalReducerType.PHYSICAL_MEDIAN;
+                break;
             // Unknown type
             default:
                 Core.logger.error("Unknown reducer type '" + options.reduceType + "'!");
@@ -102,7 +109,7 @@ public class NeonGenesis {
             Core.logger.info("Verbose mode active. Display more information about the process");
 
         // Create the process and invoke it
-        StatisticalReductionProcess reductionProcess = builder.build();
+        AbstractReductionProcess reductionProcess = builder.build();
 
         Core.logger.info("Start reduction process of " + files.length + " files");
 

@@ -43,7 +43,6 @@ import java.util.List;
  */
 public class StatisticalDatasetReducer {
 
-    private static final String BLOCK_COUNT = "globalnumblocks";
 
     private final int originalXDimension;
     private final int originalYDimension;
@@ -79,7 +78,7 @@ public class StatisticalDatasetReducer {
 
         Flash3MetaData metaData = source.getMetaData();
 
-        List<int[]> result = new ArrayList<>(metaData.getIntegerSclar(BLOCK_COUNT));
+        List<int[]> result = new ArrayList<>(metaData.getBlockCount());
         BlockTree blockTree = metaData.getBlockTree();
 
         for (Block block : blockTree.getAll()) {
@@ -137,7 +136,7 @@ public class StatisticalDatasetReducer {
     public List<float[]> reduceFloatDataset(Flash3Reader source, String datasetName) throws Exception {
         Flash3MetaData metaData = source.getMetaData();
 
-        List<float[]> result = new ArrayList<>(metaData.getIntegerSclar(BLOCK_COUNT));
+        List<float[]> result = new ArrayList<>(metaData.getBlockCount());
         BlockTree blockTree = metaData.getBlockTree();
 
         for (Block block : blockTree.getAll()) {

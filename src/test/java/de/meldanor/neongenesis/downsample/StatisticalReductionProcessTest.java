@@ -25,7 +25,6 @@
 package de.meldanor.neongenesis.downsample;
 
 import de.meldanor.neongenesis.statisticalReduce.StatisticalReducerFactory;
-import de.meldanor.neongenesis.statisticalReduce.StatisticalReductionProcess;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,7 +44,7 @@ public class StatisticalReductionProcessTest {
     @Test
     public void testReduceFile() throws Exception {
         ReductionProcessBuilder builder = ReductionProcessBuilder.create();
-        StatisticalReductionProcess build = builder.reduceAllVariableDatasets()
+        AbstractReductionProcess build = builder.reduceAllVariableDatasets()
                 .strategy(StatisticalReducerFactory.StatisticalReducerType.MEAN)
                 .outputDirectory(folder.newFolder())
                 .build();
