@@ -32,6 +32,8 @@ import de.meldanor.neongenesis.physicalReduce.PhysicalReducerType;
 import de.meldanor.neongenesis.statisticalReduce.StatisticalReducerFactory;
 
 import java.io.File;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 /**
  * The actually program
@@ -117,9 +119,10 @@ public class NeonGenesis {
             File inputFile = files[i];
 
             try {
-                Core.logger.info("Start reducing file(" + (i + 1) + "/" + files.length + ") '" + getFileInformation(isVerbose, inputFile) + "'!");
-                reductionProcess.reduceFile(inputFile);
-                Core.logger.info("Finished reducing file '" + inputFile + "'!");
+                Core.logger.info("(" + (i + 1) + "/" + files.length + ") - Reduce file: " + getFileInformation(isVerbose, inputFile));
+                File newFile = reductionProcess.reduceFile(inputFile, isVerbose);
+                Core.logger.info("(" + (i + 1) + "/" + files.length + ") - Finished! Reduced file: " + getFileInformation(isVerbose, newFile));
+
             } catch (Exception e) {
                 Core.logger.error("An error occurred while processing file '" + inputFile + "'!");
                 e.printStackTrace();
@@ -131,9 +134,24 @@ public class NeonGenesis {
 
     private String getFileInformation(boolean isVerbose, File file) throws Exception {
         if (!isVerbose)
-            return file.toString();
+            return file.getName();
         else {
-            return file.toString() + "(" + file.length() / 1024 / 1024 + " MB)";
+            return file.getName() + "(" + getLengthInMegaBytes(file) + " MB)";
         }
     }
+
+    private static final NumberFormat megabyteFormat = DecimalFormat.getNumberInstance();
+
+    static {
+        megabyteFormat.setMaximumFractionDigits(3);
+    }
+
+    private String getLengthInMegaBytes(File file) {
+        long length = file.length();
+        double res = length / 1024 / 1024;
+        res += (res - (length / 1024) * 0.001);
+
+        return megabyteFormat.format(res);
+    }
+
 }

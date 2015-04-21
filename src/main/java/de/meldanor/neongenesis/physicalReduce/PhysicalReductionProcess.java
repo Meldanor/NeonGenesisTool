@@ -137,7 +137,7 @@ public class PhysicalReductionProcess extends AbstractReductionProcess {
                     density[5] = flatOriginalDensity[index(x + 1, y, yDim, z + 1, zDim)];
                     density[6] = flatOriginalDensity[index(x, y + 1, yDim, z + 1, zDim)];
                     density[7] = flatOriginalDensity[index(x + 1, y + 1, yDim, z + 1, zDim)];
-
+ 
                     // Calculate the value
                     result[i] = calculateMixTemperature(temperature, density);
                 }

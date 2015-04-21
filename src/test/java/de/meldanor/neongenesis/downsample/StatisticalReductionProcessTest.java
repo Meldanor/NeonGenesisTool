@@ -59,7 +59,7 @@ public class StatisticalReductionProcessTest {
             throw new NullPointerException();
 
         for (File plotFile : plotFiles) {
-            build.reduceFile(plotFile);
+            build.reduceFile(plotFile, false);
         }
     }
 }

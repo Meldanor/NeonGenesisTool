@@ -24,6 +24,7 @@
 
 package de.meldanor.neongenesis.downsample;
 
+import de.meldanor.neongenesis.Core;
 import de.meldanor.neongenesis.hdf5.Flash3DataTypes;
 import de.meldanor.neongenesis.hdf5.Flash3MetaData;
 import de.meldanor.neongenesis.hdf5.Flash3Reader;
@@ -65,8 +66,11 @@ public abstract class AbstractReductionProcess {
      * @param file The file to reduce. Must be a HDF5 FLASH3 formatted file.
      * @throws Exception An error occurred while reducing (can't open file, file is not existing)
      */
-    public void reduceFile(File file) throws Exception {
+    public File reduceFile(File file, boolean verbose) throws Exception {
         Flash3Reader reader = new Flash3Reader(file);
+        if (verbose) {
+            Core.logger.info("Blocks: " + reader.getMetaData().getBlockCount());
+        }
         Point3D originalDimensions = getDimension(reader.getMetaData());
         StatisticalDatasetReducer reducer = new StatisticalDatasetReducer(originalDimensions, strategy);
 
@@ -79,6 +83,8 @@ public abstract class AbstractReductionProcess {
         reduceDatasets(reducer, reader, writer);
         reader.close();
         writer.close();
+
+        return newFile;
     }
 
     protected Point3D getDimension(Flash3MetaData metaData) {
