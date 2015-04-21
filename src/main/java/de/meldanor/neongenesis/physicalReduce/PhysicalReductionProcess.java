@@ -159,7 +159,7 @@ public class PhysicalReductionProcess extends AbstractReductionProcess {
             float temp = temperature[i];
             float dens = density[i];
 
-            sumDensity += ((temp * dens) / sumDensity);
+            res += ((temp * dens) / sumDensity);
         }
 
         return res;
